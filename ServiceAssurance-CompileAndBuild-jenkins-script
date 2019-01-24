@@ -1,0 +1,283 @@
+#!/usr/bin/env groovy
+ 
+/**
+        * Sample Jenkinsfile for JenkinsPipeline Pipeline
+        * from /home/mani/NetBeansProjects/IndianRupees/
+        * by mani@meritsystems.com 
+ */
+  
+import hudson.model.*
+import hudson.EnvVars
+import groovy.json.JsonSlurperClassic
+import groovy.json.JsonBuilder
+import groovy.json.JsonOutput
+import java.net.URL
+/**
+ * NODE--where workflow actions happen,when you allocate a node, a new workspace(a context/folder) will be created 
+*/
+node {
+    stage('\u2776 JenkinsInfo And CodeCheckout')
+   {
+   echo " JOB_URL------->${env.JOB_URL} Buildtime stamp ${env.BUILD_TIMESTAMP}" 
+   echo " JOB_NAME------->${env.JOB_NAME}"
+   echo " BUILD_NUMBER------->${env.BUILD_NUMBER}"
+   echo " WORKSPACE ------->${env.WORKSPACE} "
+   echo " NODE_NAME ------->${env.NODE_NAME}"
+   echo " NODE_LABELS ------->${env.NODE_LABELS}"
+   echo " EXECUTOR_NUMBER ------->${env.EXECUTOR_NUMBER}"
+   echo " BUILD_ID ------->${env.BUILD_ID}"
+   echo " JENKINS_URL ------->${env.JENKINS_URL}"
+   echo " BUILD_DISPLAY_NAME ------->${env.BUILD_DISPLAY_NAME}"
+   echo " JENKINS_HOME ------->${env.JENKINS_HOME}"
+   git url: '/home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/DeviceManagementandAdministration/DeviceManagementGUIApp/SA-DeskAdminTool'
+
+   }
+   stage('\u2777 Clean-Project')
+   {
+        echo "This is cleaning of project...!"
+        sh 'ant -f /home/mani/Desktop/AVSA/Framework/Infrastructure/Adapters/DeviceAdapter/DBMonitor/src clean'
+        sh 'ant -f /home/mani/Desktop/AVSA/Framework/Solar/Adapters/DeviceAdapter/FroniusAdapter/src clean'
+        sh 'ant -f /home/mani/Desktop/AVSA/Framework/Infrastructure/Adapters/DeviceAdapter/GangliaAdapter/src clean'
+        sh 'ant -f /home/mani/Desktop/AVSA/Framework/Infrastructure/Adapters/DeviceAdapter/JVMMonitor/src clean'
+        sh 'ant -f /home/mani/Desktop/AVSA/Framework/Infrastructure/Adapters/DeviceAdapter/jWMIAdapter/src clean'
+        sh 'ant -f /home/mani/Desktop/AVSA/Framework/Solar/Adapters/DeviceAdapter/ModBusAdapter/src clean'
+        sh 'ant -f /home/mani/Desktop/AVSA/Framework/Infrastructure/Adapters/DeviceAdapter/NetAgent/src clean'
+
+
+        sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/Communication/DeviceProtocolHandler/ModBus/src clean'
+        sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/Communication/DeviceProtocolHandler/ModBusConnector/src clean'
+
+
+        sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/Communication/TransportProtocolHandler/SSL-API/src clean'
+
+        sh 'ant -f "/home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/DeviceManagementandAdministration/Device ManagementAPI/DeviceManagment/src" clean'
+
+        sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/AdminAPI/CloudUserAPI/web clean'
+        sh 'ant -f "/home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/Security/Alerts andNotificationServices/EMailSMSUtility/src" clean'
+
+        sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/DeviceManagementandAdministration/DeviceManagementGUIApp/SA-DeskAdminTool/web clean'
+
+        sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/DBUtil/DatabaseConnection/src clean'
+        sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/EventLogger/ETLAdapter/src clean'
+        sh 'ant -f /home/mani/Desktop/AVSA/Framework/Infrastructure/EventLogger/ETLAdapter/src clean'
+       
+        sh 'ant -f /home/mani/Desktop/AVSA/Framework/Infrastructure/OfflineAnalytics/DashBoard-JSONgenerator/src clean'
+        sh 'ant -f "/home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/Offline Analytics/ChartDataGenerator/DashBoard-JSONgenerator-ArbitraryDate/src" clean'
+
+        sh 'ant -f "/home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/Offline Analytics/TimeLineAggregator/TimeLineAggregator/src" clean'
+
+        sh 'ant -f "/home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/Offline Analytics/TimeLineConsumedGenerator/TimeLineConsumedGenerator/src" clean'
+
+        sh 'ant -f "/home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/Offline Analytics/TimeLineConsumedGenerator/TimeLineConsumedGeneratorForGivenTS/src" clean'
+
+        sh 'ant -f "/home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/Offline Analytics/TimeLineConsumedGenerator/TimeLineConsumedGeneratorFromStartOfDay/src" clean'
+
+        sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/Router/Router/SADeskFrontInterface/src clean'
+
+        sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/StreamAnalytics/CEPEngine/sadeskCEP2.0/src clean'
+
+        sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/StreamAnalytics/DBEngine/DBEngine/src clean'
+
+        sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/Security/SecurityServices/LicenseKeyGenerator/src clean'
+
+        sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/Security/SecurityServices/LicenseService/src clean'
+
+        sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/FailedEventsUploader/Failed-Event/web clean'
+
+        sh 'ant -f /home/mani/Desktop/AVSA/Framework/Infrastructure/EventLogger/ETLAdapter/src clean'
+  
+  
+   }
+   stage('\u2778 Build-Project'){
+ 
+ /*     
+     echo "\u27A1 Compiling And Building The Project...! "
+      /**
+         *Build Project
+         *gradle build is used build the project --info is used to print the build information
+  */
+  
+       if(isUnix()){
+       echo "This is Unix Ant build...!"
+       
+        // 1.copying DatabaseConnection jar to ETLAdapter,Dashboard-Generator and TimeconsumerGenerators
+        sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/DBUtil/DatabaseConnection/src compile'
+        sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/DBUtil/DatabaseConnection/src create'
+        sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/DBUtil/DatabaseConnection/src copyjar'
+        //End of copy
+       
+       // 2.Copying ETLAdapter to SADeskFrontInterFace,sadeskCEP2.0,NetAgent,GangliAdapter,JVMMonitor,CloudUserAPI
+        sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/EventLogger/ETLAdapter/src compile'
+        sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/EventLogger/ETLAdapter/src create'
+        sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/EventLogger/ETLAdapter/src copyjar'
+       //End of copy
+       
+       // 3.Copying Devicemanagement Jar to CloudUserAPT
+       sh 'ant -f "/home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/DeviceManagementandAdministration/Device ManagementAPI/DeviceManagment/src" compile'
+
+       sh 'ant -f "/home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/DeviceManagementandAdministration/Device ManagementAPI/DeviceManagment/src" create'
+       sh 'ant -f "/home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/DeviceManagementandAdministration/Device ManagementAPI/DeviceManagment/src" copyjar'
+       
+       //End of Copy
+       
+       // 4.Copying ModBus jar to FroniousAdapter
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/Communication/DeviceProtocolHandler/ModBus/src compile'
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/Communication/DeviceProtocolHandler/ModBus/src create'
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/Communication/DeviceProtocolHandler/ModBus/src copyjar'
+       //End of copying jar to FroniousAdapter
+     
+       // 5.Copying ModBusConnector jar to ModBusAdapter
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/Communication/DeviceProtocolHandler/ModBusConnector/src compile'
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/Communication/DeviceProtocolHandler/ModBusConnector/src create'
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/Communication/DeviceProtocolHandler/ModBusConnector/src copyjar'
+       //End of ModBusConnector jar to ModBusAdapter
+     
+     
+      // 6.Copying SSL-API jar to all adapters
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/Communication/TransportProtocolHandler/SSL-API/src compile'
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/Communication/TransportProtocolHandler/SSL-API/src create'
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/Communication/TransportProtocolHandler/SSL-API/src copyjar'
+      //End of Copying jar
+      
+      // 7. Copying sadeskCEP jar to DBEngine
+      sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/StreamAnalytics/CEPEngine/sadeskCEP2.0/src compile'
+      sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/StreamAnalytics/CEPEngine/sadeskCEP2.0/src create'
+      sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/StreamAnalytics/CEPEngine/sadeskCEP2.0/src copyjar'
+      
+      //End Of copy
+       
+      
+       
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/Infrastructure/Adapters/DeviceAdapter/DBMonitor/src compile'
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/Solar/Adapters/DeviceAdapter/FroniusAdapter/src compile'
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/Infrastructure/Adapters/DeviceAdapter/GangliaAdapter/src compile'
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/Infrastructure/Adapters/DeviceAdapter/JVMMonitor/src compile'
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/Infrastructure/Adapters/DeviceAdapter/jWMIAdapter/src compile'
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/Solar/Adapters/DeviceAdapter/ModBusAdapter/src compile'
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/Infrastructure/Adapters/DeviceAdapter/NetAgent/src compile' 
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/AdminAPI/CloudUserAPI/web compile'
+
+       sh 'ant -f "/home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/Security/Alerts andNotificationServices/EMailSMSUtility/src" compile'
+
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/DeviceManagementandAdministration/DeviceManagementGUIApp/SA-DeskAdminTool/web compile'
+      
+
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/Infrastructure/OfflineAnalytics/DashBoard-JSONgenerator/src compile'
+       sh 'ant -f "/home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/Offline Analytics/ChartDataGenerator/DashBoard-JSONgenerator-ArbitraryDate/src" compile'
+
+       sh 'ant -f "/home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/Offline Analytics/TimeLineAggregator/TimeLineAggregator/src" compile'
+
+       sh 'ant -f "/home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/Offline Analytics/TimeLineConsumedGenerator/TimeLineConsumedGenerator/src" compile'
+
+       sh 'ant -f "/home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/Offline Analytics/TimeLineConsumedGenerator/TimeLineConsumedGeneratorForGivenTS/src" compile'
+
+       sh 'ant -f "/home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/Offline Analytics/TimeLineConsumedGenerator/TimeLineConsumedGeneratorFromStartOfDay/src" compile'
+
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/Router/Router/SADeskFrontInterface/src compile'
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/StreamAnalytics/DBEngine/DBEngine/src compile'
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/Security/SecurityServices/LicenseKeyGenerator/src compile'
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/Security/SecurityServices/LicenseService/src compile'
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/FailedEventsUploader/Failed-Event/web compile'
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/Infrastructure/EventLogger/ETLAdapter/src compile'
+       }
+       else{
+       // bat 'ant -f /var/lib/jenkins/workspace compile'
+       // bat 'ant -f /home/mani/NetBeansProjects/IndianRupees/web compile'
+       }
+
+
+   }
+   stage('\u2779 Testing Project')
+   {
+ //Checking for file
+  def props = new Properties()
+  File propsFile = new File('/var/lib/jenkins/build.properties')
+if (!propsFile.exists()) {
+     Integer i=0;
+                while (!propsFile.exists() && i++<= 5) {
+
+                    try {
+                        println "Waiting for input file  a while"
+                        Thread.sleep(1000); // wait for 3 sec
+                         
+                    } catch (Exception ex) {
+                     
+                    }
+                }
+  println "File not Found"
+  emailext body: "In This Build  ${env.BUILD_URL} Testing is Failed:File not Found", 
+        recipientProviders: [[$class: 'DevelopersRecipientProvider']], 
+        subject: "Pipeline (${env.BUILD_NUMBER}) Failed", 
+        to: 'mani@meritsystems.com'
+  error "Expected Propeties File does not exists..."
+}else{
+  
+   if(propsFile.exists()){
+  props.load(propsFile.newDataInputStream())
+ // println props.getProperty('teststatus')
+  def status=props.getProperty('teststatus')
+  if(  "success" == status ) { 
+    println "Testing Completed Successfully" 
+    
+  }else{ 
+   
+    println "Testing Not Completed Successfully"
+    error "Testing Status is false"
+  } 
+  
+}
+}
+   }
+   
+   stage(' Deploye Project'){
+       
+       echo "This is creating Jar and War"
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/Infrastructure/Adapters/DeviceAdapter/DBMonitor/src create'
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/Solar/Adapters/DeviceAdapter/FroniusAdapter/src create'
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/Infrastructure/Adapters/DeviceAdapter/GangliaAdapter/src create'
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/Infrastructure/Adapters/DeviceAdapter/JVMMonitor/src create'
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/Infrastructure/Adapters/DeviceAdapter/jWMIAdapter/src create'
+
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/Solar/Adapters/DeviceAdapter/ModBusAdapter/src create'
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/Infrastructure/Adapters/DeviceAdapter/NetAgent/src create'
+       
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/AdminAPI/CloudUserAPI/web create'
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/AdminAPI/CloudUserAPI/web deploywar'
+       
+       sh 'ant -f "/home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/Security/Alerts andNotificationServices/EMailSMSUtility/src" create'
+       
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/DeviceManagementandAdministration/DeviceManagementGUIApp/SA-DeskAdminTool/web create'
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/DeviceManagementandAdministration/DeviceManagementGUIApp/SA-DeskAdminTool/web deploywar'
+
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/Infrastructure/OfflineAnalytics/DashBoard-JSONgenerator/src create'
+
+     
+       sh 'ant -f "/home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/Offline Analytics/ChartDataGenerator/DashBoard-JSONgenerator-ArbitraryDate/src" create'
+
+       sh 'ant -f "/home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/Offline Analytics/TimeLineConsumedGenerator/TimeLineConsumedGenerator/src" create'
+
+       sh 'ant -f "/home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/Offline Analytics/TimeLineConsumedGenerator/TimeLineConsumedGeneratorForGivenTS/src" create'
+
+       sh 'ant -f "/home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/Offline Analytics/TimeLineConsumedGenerator/TimeLineConsumedGeneratorFromStartOfDay/src" create'
+
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/Router/Router/SADeskFrontInterface/src create'
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTServer/StreamAnalytics/DBEngine/DBEngine/src create'
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/Security/SecurityServices/LicenseKeyGenerator/src create'
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/Security/SecurityServices/LicenseService/src create'
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/FailedEventsUploader/Failed-Event/web create'
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/IoTFramework/IoTGateway/FailedEventsUploader/Failed-Event/web deploywar'
+       sh 'ant -f /home/mani/Desktop/AVSA/Framework/Infrastructure/EventLogger/ETLAdapter/src create'
+      
+        emailext body: "This Pipeline is ${env.BUILD_URL} Successfully Completed", 
+        recipientProviders: [[$class: 'DevelopersRecipientProvider']], 
+        subject: "Pipeline (${env.BUILD_NUMBER}) Success", 
+        to: 'mani@meritsystems.com'
+       
+ 
+      
+   }
+
+   
+   
+   
+}
